@@ -26,12 +26,20 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api/timestamp/:date_string?", (req, res) => {
 
-  if(req.params.date_string == null){
+  const { date_string } = req.params
+
+  if(date_string == null){
     currentDate = new Date()
     return res.json({ "unix": currentDate.getTime(), "utc": currentDate.toUTCString() })
   }
 
-  const strToDate = new Date(req.params.date_string)
+  if((/^\d+$/).test(date_string)){
+    const unix = parseInt(date_string);
+    const unixDate = new Date(unix);
+    return res.json({ "unix": unixDate.getTime(), "utc": unixDate.toUTCString() })
+  }
+
+  const strToDate = new Date(date_string)
 
   if(strToDate == 'Invalid Date') {
     return res.json({"error": 'Invalid Date'})
